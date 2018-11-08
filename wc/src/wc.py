@@ -3,11 +3,13 @@
 ################################################################################
 #	wc.py  -  Oct-31-2018 by aldebap
 #
-#	Python version of Linux wc utility
+#	Python version of GNU Linux wc utility
 ################################################################################
 
 import argparse
 import sys
+
+#   global options
 
 showByteCount = False
 showWordCount = False
@@ -56,7 +58,7 @@ def countFromFile(_fileHandler, _fileName):
 if(__name__ == '__main__'):
 
     #	parse command line interface arguments
-    parser = argparse.ArgumentParser( description='A Phyton implementation of GNU wc utility')
+    parser = argparse.ArgumentParser( description='A Phyton implementation of GNU Linux wc utility')
 
     parser.add_argument('-c', '--bytes', dest='bytes', action='store_true', help='print the byte counts')
     parser.add_argument('-m', '--chars', dest='chars', action='store_true', help='print the character counts')
