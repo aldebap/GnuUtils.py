@@ -11,9 +11,11 @@ import argparse
 #	function to make count on input file
 
 
-def countFromFile(_fileHandler):
+def countFromFile(_fileHandler, _fileName):
     byteCount = 0
+    wordCount = 0
     lineCount = 0
+    token = False
 
     while True:
         byte = _fileHandler.read(1)
@@ -21,10 +23,22 @@ def countFromFile(_fileHandler):
             break
 
         byteCount = byteCount + 1
+        if ' ' == byte or '\t' == byte or '\n' == byte:
+            if True == token:
+                wordCount = wordCount + 1
+            token = False
+        else:
+            token = True
+
         if '\n' == byte:
             lineCount = lineCount + 1
 
-    print format(lineCount) + ' ' + format(byteCount)
+    if '' == _fileName:
+        print format(lineCount) + ' ' + format(wordCount) + \
+            ' ' + format(byteCount)
+    else:
+        print format(lineCount) + ' ' + format(wordCount) + \
+            ' ' + format(byteCount) + ' ' + _fileName
 
 
 #	entry point
@@ -44,10 +58,15 @@ if(__name__ == '__main__'):
     parser.add_argument('-w', '--words', dest='words',
                         action='store_true', help='print the word counts')
 
+    parser.add_argument(dest='fileNames', nargs='*')
+
     args = parser.parse_args()
 
     #   read the input file and make the summarizations
-    with open('/home/aldeba/.bashrc', 'r') as inputFile:
-        countFromFile(inputFile)
-        inputFile.close()
-        print ' FileName\n'
+    if 0 == len(args.fileNames):
+        countFromFile(StandardError, '')
+    else:
+        for fileName in args.fileNames:
+            with open(fileName, 'r') as inputFile:
+                countFromFile(inputFile, fileName)
+                inputFile.close()
