@@ -9,7 +9,7 @@ https://github.com/aldebap/GnuUtils.py/tree/master/cat/src
 ## tr
 Phyton implementation for tr, an utility to translate, squeeze, and/or delete characters from standard input
 
-https://github.com/aldebap/GnuUtils.py/tree/master/cat/src
+https://github.com/aldebap/GnuUtils.py/tree/master/tr/src
 
 ## wc
 Phyton implementation for wc, an utility to count characters, words and lines from an input file

@@ -22,7 +22,7 @@ def concatenateFile( _fileHandler ):
 
 #	entry point
 
-if __name__ == '__main__':
+def main():
 
     #	parse command line interface arguments
     parser = argparse.ArgumentParser( description='A Phyton implementation of GNU Linux cat utility' )
@@ -39,3 +39,8 @@ if __name__ == '__main__':
             with open( fileName, 'r' ) as inputFile:
                 concatenateFile( inputFile )
                 inputFile.close()
+
+#	entry point
+
+if __name__ == '__main__':
+    main()

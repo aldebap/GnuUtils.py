@@ -81,6 +81,7 @@ def main():
         deleteFromFile( args.sets[ 0 ] )
     else:
         translateFromFile( args.sets[ 0 ], args.sets[ 1 ] )
+
 #	entry point
 
 if __name__ == '__main__':
