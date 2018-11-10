@@ -55,7 +55,7 @@ def countFromFile(_fileHandler, _fileName):
 
 #	entry point
 
-if(__name__ == '__main__'):
+if __name__ == '__main__':
 
     #	parse command line interface arguments
     parser = argparse.ArgumentParser( description='A Phyton implementation of GNU Linux wc utility')
