@@ -8,6 +8,7 @@
 
 import argparse
 import sys
+import os.path
 
 #   constants to options
 
@@ -16,6 +17,7 @@ SHOW_TABS = 'showTabs'
 SHOW_NON_PRINTING = 'showNonPrinting'
 NUMBER_NON_BLANK = 'numberNonBlank'
 NUMBER = 'number'
+SQUEEZE_BLANK = 'squeezeBlank'
 
 #	function to concatenate a file to standard output
 
@@ -23,6 +25,7 @@ def concatenateFile( _fileHandler, _options ):
 
     line = ''
     lineNumber = 1
+    previousLineBlank = False
 
     while True:
         byte = _fileHandler.read( 1 )
@@ -30,20 +33,28 @@ def concatenateFile( _fileHandler, _options ):
             break
 
         if '\n' == byte:
+            if '' == line and True == previousLineBlank and SQUEEZE_BLANK in _options:
+                continue
+
+            if '' == line:
+                previousLineBlank = True
+            else:
+                previousLineBlank = False
+
             #   print a dollar sign in the end of a line
             if SHOW_ENDS in _options:
                 line = line + '$'
 
-            if NUMBER in _options:
-                sys.stdout.write( format( lineNumber ) + ' ' + line + '\n' )
-                lineNumber = lineNumber + 1
+            if NUMBER_NON_BLANK in _options:
+                if '' == line or ( '$' == line and SHOW_ENDS in _options ):
+                    sys.stdout.write( line + '\n' )
+                else:
+                    sys.stdout.write( format( lineNumber ) + ' ' + line + '\n' )
+                    lineNumber = lineNumber + 1
             else:
-                if NUMBER_NON_BLANK in _options:
-                    if '' == line or ( '$' == line and SHOW_ENDS in _options ):
-                        sys.stdout.write( line + '\n' )
-                    else:
-                        sys.stdout.write( format( lineNumber ) + ' ' + line + '\n' )
-                        lineNumber = lineNumber + 1
+                if NUMBER in _options:
+                    sys.stdout.write( format( lineNumber ) + ' ' + line + '\n' )
+                    lineNumber = lineNumber + 1
                 else:
                     sys.stdout.write( line + '\n' )
 
@@ -57,20 +68,20 @@ def concatenateFile( _fileHandler, _options ):
 
         #   the code bellow for non printing characters follows original cat source code (https://github.com/goj/coreutils/blob/rm-d/src/cat.c)
         if 32 > ord( byte ) and SHOW_NON_PRINTING in _options:
-            sys.stdout.write( '^' + chr( ord( byte ) + ord( '@' ) ) )
+            line = line + '^I' + chr( ord( byte ) + ord( '@' ) )
             continue
         if 127 == ord( byte ) and SHOW_NON_PRINTING in _options:
-            sys.stdout.write( '^?' )
+            line = line + '^?'
             continue
         if 127 < ord( byte ) and SHOW_NON_PRINTING in _options:
-            sys.stdout.write( 'M-' )
+            line = line + 'M-'
             if 128 + 32 <=  ord( byte ):
                 if 128 + 127 > ord( byte ):
-                    sys.stdout.write( chr( ord( byte ) - 128 ) )
+                    line = line + chr( ord( byte ) - 128 )
                 else:
-                    sys.stdout.write( '^?' )
+                    line = line + '^?'
             else:
-                sys.stdout.write( '^' + chr( ord( byte ) - 128 + 64 ) )
+                line = line + '^' + chr( ord( byte ) - 128 + 64 )
             continue
 
         line = line + byte
@@ -121,14 +132,23 @@ def main():
     if True == args.number:
         options[ NUMBER ] = True
 
+    if True == args.squeezeBlank:
+        options[ SQUEEZE_BLANK ] = True
+
     #   read the input file and concatenate to stdout
     if 0 == len( args.fileNames ):
         concatenateFile( sys.stdin, options )
     else:
         for fileName in args.fileNames:
-            with open( fileName, 'r' ) as inputFile:
-                concatenateFile( inputFile, options )
-                inputFile.close()
+            if '-' == fileName:
+                concatenateFile( sys.stdin, options )
+            else:
+                if os.path.isfile( fileName ):
+                    with open( fileName, 'r' ) as inputFile:
+                        concatenateFile( inputFile, options )
+                        inputFile.close()
+                else:
+                    sys.stderr.write( parser.prog + ': ' + fileName + ': No such file or directory\n' )
 
 #	entry point
 
