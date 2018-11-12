@@ -33,7 +33,7 @@ def translateFromFile( _options ):
             if not SQUEEZE in _options:
                 sys.stdout.write( byte )
             else:
-                if byte in set2 and byte != previousByte:
+                if not byte in set2 or ( byte in set2 and byte != previousByte ):
                     sys.stdout.write( byte )
         else:
             if set1.index( byte ) + 1 < len( set2 ):
@@ -82,6 +82,9 @@ def main():
         options[ SET1 ] = args.sets[ 0 ]
 
         if 2 == len( args.sets ):
+            if True == args.truncate and len( args.sets[ 0 ] ) > len( args.sets[ 1 ] ):
+                options[ SET1 ] = args.sets[ 0 ][ 0:len( args.sets[ 1 ] ) ]
+
             options[ SET2 ] = args.sets[ 1 ]
         else:
             if 2 < len( args.sets ):
