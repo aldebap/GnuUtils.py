@@ -12,6 +12,8 @@ import os.path
 
 #   constants to options
 
+BYTES = 'bytes'
+
 #	function to cut lines from a file to standard output
 
 def cutLines( _fileHandler, _options ):
@@ -24,7 +26,13 @@ def cutLines( _fileHandler, _options ):
             break
 
         if '\n' == byte:
-            sys.stdout.write( line + '\n' )
+            if BYTES in _options:
+                if len( line ) >= int( _options[ BYTES ] ):
+                    sys.stdout.write( line[ int( _options[ BYTES ] ) - 1 ] + '\n' )
+                else:
+                    sys.stdout.write( '\n' )
+            else:
+                sys.stdout.write( line + '\n' )
             line = ''
             continue
 
@@ -35,8 +43,9 @@ def cutLines( _fileHandler, _options ):
 def main():
 
     #	parse command line interface arguments
-    parser = argparse.ArgumentParser( description='A Phyton implementation of GNU Linux cat utility' )
+    parser = argparse.ArgumentParser( description='A Phyton implementation of GNU Linux cut utility' )
 
+    parser.add_argument( '-b', '--bytes=', dest='bytes', action='store', help='select only these bytes' )
     parser.add_argument( '--version', dest='version', action='store_true', help='output version information and exit' )
 
     parser.add_argument( dest='fileNames', nargs='*' )
@@ -48,17 +57,23 @@ def main():
         print 'Written by Aldebaran Perseke (github.com/aldebap)'
         return
 
-    #   read the input file and concatenate to stdout
+    #   set the options
+    options = {}
+
+    if 0 <= len( args.bytes ):
+        options[ BYTES ] = args.bytes
+
+    #   read the input file and cut lines to stdout
     if 0 == len( args.fileNames ):
-        concatenateFile( sys.stdin, options )
+        cutLines( sys.stdin, options )
     else:
         for fileName in args.fileNames:
             if '-' == fileName:
-                concatenateFile( sys.stdin, options )
+                cutLines( sys.stdin, options )
             else:
                 if os.path.isfile( fileName ):
                     with open( fileName, 'r' ) as inputFile:
-                        concatenateFile( inputFile, options )
+                        cutLines( inputFile, options )
                         inputFile.close()
                 else:
                     sys.stderr.write( parser.prog + ': ' + fileName + ': No such file or directory\n' )
