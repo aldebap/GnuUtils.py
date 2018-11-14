@@ -65,13 +65,17 @@ def main():
     options = {}
 
     if 0 <= len( args.bytes ):
-        #   TODO: check if there's only digits and hifens
         options[ BYTES ] = []
         for range in re.split( r',', args.bytes ):
             if not '-' in range:
+                if not re.match( r'^\d+$', range ):
+                    parser.error( parser.prog + ': invalid byte/character position "' + range + '"' )
+
                 options[ BYTES ].append( [ int( range ) - 1, int( range ) ] )
             else:
-            #   TODO: check if there's only one hifen
+                if not re.match( r'^\d*-\d+$', range ) and not re.match( r'^\d+-\d*$', range ):
+                    parser.error( parser.prog + ': invalid byte/character range' )
+
                 if '-' == range[ 0 ]:
                     options[ BYTES ].append( [ 0, int( range[ 1: ] ) ] )
                 else:
@@ -79,7 +83,7 @@ def main():
                         options[ BYTES ].append( [ int( range[ :len( range ) -1 ] ) - 1, 0 ] )
                     else:
                         options[ BYTES ].append( [ int( range[ :range.index( '-' ) ] ) - 1, int( range[ range.index( '-' ) + 1: ] ) ] )
-            #   TODO: check if there first index is lower than the second index
+            #   TODO: check if the first index is lower than the second index
         sys.stderr.write( '[debug] bytes: ' + " ".join( map( str, options[ BYTES ] ) ) + '\n' )
 
     #   read the input file and cut lines to stdout
