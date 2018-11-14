@@ -7,8 +7,9 @@
 ################################################################################
 
 import argparse
-import sys
 import os.path
+import re
+import sys
 
 #   constants to options
 
@@ -27,10 +28,12 @@ def cutLines( _fileHandler, _options ):
 
         if '\n' == byte:
             if BYTES in _options:
-                if len( line ) >= int( _options[ BYTES ] ):
-                    sys.stdout.write( line[ int( _options[ BYTES ] ) - 1 ] + '\n' )
-                else:
-                    sys.stdout.write( '\n' )
+                for range in _options[ BYTES ]:
+                    if 0 == range[ 1 ]:
+                        sys.stdout.write( line[ range[ 0 ]: ] )
+                    else:
+                        sys.stdout.write( line[ range[ 0 ]:range[ 1 ] ] )
+                sys.stdout.write( '\n' )
             else:
                 sys.stdout.write( line + '\n' )
             line = ''
@@ -46,6 +49,7 @@ def main():
     parser = argparse.ArgumentParser( description='A Phyton implementation of GNU Linux cut utility' )
 
     parser.add_argument( '-b', '--bytes=', dest='bytes', action='store', help='select only these bytes' )
+    parser.add_argument( '-n', dest='ignored', action='store_true', help='(ignored)' )
     parser.add_argument( '--version', dest='version', action='store_true', help='output version information and exit' )
 
     parser.add_argument( dest='fileNames', nargs='*' )
@@ -61,7 +65,22 @@ def main():
     options = {}
 
     if 0 <= len( args.bytes ):
-        options[ BYTES ] = args.bytes
+        #   TODO: check if there's only digits and hifens
+        options[ BYTES ] = []
+        for range in re.split( r',', args.bytes ):
+            if not '-' in range:
+                options[ BYTES ].append( [ int( range ) - 1, int( range ) ] )
+            else:
+            #   TODO: check if there's only one hifen
+                if '-' == range[ 0 ]:
+                    options[ BYTES ].append( [ 0, int( range[ 1: ] ) ] )
+                else:
+                    if '-' == range[ len( range ) - 1 ]:
+                        options[ BYTES ].append( [ int( range[ :len( range ) -1 ] ) - 1, 0 ] )
+                    else:
+                        options[ BYTES ].append( [ int( range[ :range.index( '-' ) ] ) - 1, int( range[ range.index( '-' ) + 1: ] ) ] )
+            #   TODO: check if there first index is lower than the second index
+        sys.stderr.write( '[debug] bytes: ' + " ".join( map( str, options[ BYTES ] ) ) + '\n' )
 
     #   read the input file and cut lines to stdout
     if 0 == len( args.fileNames ):

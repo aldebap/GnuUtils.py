@@ -6,6 +6,12 @@ Phyton implementation for cat, an utility to concatenate files to standard outpu
 
 https://github.com/aldebap/GnuUtils.py/tree/master/cat/src
 
+## cut
+
+Phyton implementation for cut, an utility to cut content from lines read from input file
+
+https://github.com/aldebap/GnuUtils.py/tree/master/cut/src
+
 ## tr
 Phyton implementation for tr, an utility to translate, squeeze, and/or delete characters from standard input
 
@@ -18,8 +24,10 @@ https://github.com/aldebap/GnuUtils.py/tree/master/wc/src
 
 ## grep
 
-## cut
-
 ## sort
 
 ## tar
+
+Information about .tar file format can be read from GNU reference manual: https://www.gnu.org/software/tar/manual/html_node/Standard.html
+
+## wget
