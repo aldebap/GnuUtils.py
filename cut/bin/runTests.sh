@@ -2,6 +2,7 @@
 
 export  TEST_DIRECTORY=test
 export  CURRENT_DIRECTORY=$( pwd )
+export  PYTHONPATH="$( pwd )/src"
 
 cd ${TEST_DIRECTORY}
 python -m unittest discover
