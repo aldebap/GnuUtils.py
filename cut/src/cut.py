@@ -1,4 +1,4 @@
-#!	/usr/bin/python
+#!	/usr/bin/python3
 
 ################################################################################
 #	cut.py  -  Nov-12-2018 by aldebap
@@ -117,8 +117,8 @@ def main():
     args = parser.parse_args()
 
     if True == args.version:
-        print 'This is free software: you are free to change and redistribute it.'
-        print 'Written by Aldebaran Perseke (github.com/aldebap)'
+        print( 'This is free software: you are free to change and redistribute it.' )
+        print( 'Written by Aldebaran Perseke (github.com/aldebap)' )
         return
 
     #   validate the options

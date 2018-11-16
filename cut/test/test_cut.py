@@ -1,4 +1,4 @@
-#!	/usr/bin/python
+#!	/usr/bin/python3
 
 ################################################################################
 #	test_cut.py  -  Nov-15-2018 by aldebap
@@ -17,7 +17,9 @@ import cut
 class test_cut( unittest.TestCase ):
     def test_withoutOptions( self ):
         with patch( 'sys.stderr', new=StringIO() ) as mockStderr:
-            cut.main()
+            with self.assertRaises( SystemExit ) as exit:
+                cut.main()
+            self.assertEqual( exit.exception.code, 2 )
             self.assertTrue( -1 != mockStderr.getvalue().find( 'you must specify a list of bytes, characters, or fields' ) )
 
 #	entry point

@@ -5,5 +5,5 @@ export  CURRENT_DIRECTORY=$( pwd )
 export  PYTHONPATH="$( pwd )/src"
 
 cd ${TEST_DIRECTORY}
-python -m unittest discover
+python3 -m unittest discover
 cd "${CURRENT_DIRECTORY}"
