@@ -28,12 +28,11 @@ def cutLines( _fileHandler, _options ):
     while True:
         byte = _fileHandler.read( 1 )
         if '' == byte:
-            break
-        #   TODO: if the last byte of the file is not LF, the last line is ignores
-#            if 0 == len( line ):
- #               break
-  #          else:
-   #             byte = '\n'
+            #   if there's a last line without a LF, make it be processed
+            if 0 == len( line ):
+                break
+            else:
+                byte = '\n'
 
         if '\n' == byte:
             if BYTES in _options:
