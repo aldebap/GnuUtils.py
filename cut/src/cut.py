@@ -29,6 +29,11 @@ def cutLines( _fileHandler, _options ):
         byte = _fileHandler.read( 1 )
         if '' == byte:
             break
+        #   TODO: if the last byte of the file is not LF, the last line is ignores
+#            if 0 == len( line ):
+ #               break
+  #          else:
+   #             byte = '\n'
 
         if '\n' == byte:
             if BYTES in _options:
@@ -117,8 +122,8 @@ def main():
     args = parser.parse_args()
 
     if True == args.version:
-        print( 'This is free software: you are free to change and redistribute it.' )
-        print( 'Written by Aldebaran Perseke (github.com/aldebap)' )
+        sys.stdout.write( 'This is free software: you are free to change and redistribute it.' )
+        sys.stdout.write( 'Written by Aldebaran Perseke (github.com/aldebap)' )
         return
 
     #   validate the options
@@ -138,7 +143,6 @@ def main():
 
     if args.bytes is not None:
         options[ BYTES ] = parseRanges( parser, args.bytes )
-        sys.stderr.write( '[debug] bytes: ' + " ".join( map( str, options[ BYTES ] ) ) + '\n' )
 
     if args.characters is not None:
         options[ CHARACTERS ] = parseRanges( parser, args.characters )
