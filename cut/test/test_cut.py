@@ -10,6 +10,7 @@ from io import StringIO
 from unittest.mock import patch
 import unittest
 import sys
+import tempfile
 
 import cut
 
@@ -208,8 +209,8 @@ class test_cut( unittest.TestCase ):
                 sys.argv = [ 'cut' ]
                 cut.main()
 
-            self.assertEqual( exit.exception.code, 2 )
-            self.assertTrue( -1 != mockStderr.getvalue().find( 'you must specify a list of bytes, characters, or fields' ) )
+        self.assertEqual( exit.exception.code, 2 )
+        self.assertTrue( -1 != mockStderr.getvalue().find( 'you must specify a list of bytes, characters, or fields' ) )
 
     #   test cut - 02. check for version options
     def test_versionOption( self ):
@@ -218,7 +219,7 @@ class test_cut( unittest.TestCase ):
             sys.argv = [ 'cut', '--version' ]
             cut.main()
 
-            self.assertTrue( -1 != mockStdout.getvalue().find( 'Written by Aldebaran Perseke' ) )
+        self.assertTrue( -1 != mockStdout.getvalue().find( 'Written by Aldebaran Perseke' ) )
 
     #   test cut - 03. check for invalid option only
     def test_invalidOptionOnly( self ):
@@ -228,8 +229,8 @@ class test_cut( unittest.TestCase ):
                 sys.argv = [ 'cut', '-a' ]
                 cut.main()
 
-            self.assertEqual( exit.exception.code, 2 )
-            self.assertTrue( -1 != mockStderr.getvalue().find( 'unrecognized arguments: -a' ) )
+        self.assertEqual( exit.exception.code, 2 )
+        self.assertTrue( -1 != mockStderr.getvalue().find( 'unrecognized arguments: -a' ) )
 
     #   test cut - 04. check for the ignored option only
     def test_ignoredOptionOnly( self ):
@@ -239,8 +240,8 @@ class test_cut( unittest.TestCase ):
                 sys.argv = [ 'cut', '-n' ]
                 cut.main()
 
-            self.assertEqual( exit.exception.code, 2 )
-            self.assertTrue( -1 != mockStderr.getvalue().find( 'you must specify a list of bytes, characters, or fields' ) )
+        self.assertEqual( exit.exception.code, 2 )
+        self.assertTrue( -1 != mockStderr.getvalue().find( 'you must specify a list of bytes, characters, or fields' ) )
 
     #   test cut - 05. check for invalid option
     def test_invalidOption( self ):
@@ -250,8 +251,8 @@ class test_cut( unittest.TestCase ):
                 sys.argv = [ 'cut', '-a', '--bytes=4' ]
                 cut.main()
 
-            self.assertEqual( exit.exception.code, 2 )
-            self.assertTrue( -1 != mockStderr.getvalue().find( 'unrecognized arguments: -a' ) )
+        self.assertEqual( exit.exception.code, 2 )
+        self.assertTrue( -1 != mockStderr.getvalue().find( 'unrecognized arguments: -a' ) )
 
     #   test cut - 06. check for the ignored option
     def test_ignoredOption( self ):
@@ -271,8 +272,8 @@ class test_cut( unittest.TestCase ):
                 sys.argv = [ 'cut', '--bytes=4', '--characters=5' ]
                 cut.main()
 
-            self.assertEqual( exit.exception.code, 2 )
-            self.assertTrue( -1 != mockStderr.getvalue().find( 'only one type of list may be specified' ) )
+        self.assertEqual( exit.exception.code, 2 )
+        self.assertTrue( -1 != mockStderr.getvalue().find( 'only one type of list may be specified' ) )
 
     #   test cut - 08. check for bytes and fields options together
     def test_bytesAndFieldsOptions( self ):
@@ -282,8 +283,8 @@ class test_cut( unittest.TestCase ):
                 sys.argv = [ 'cut', '--bytes=4', '--fields=5' ]
                 cut.main()
 
-            self.assertEqual( exit.exception.code, 2 )
-            self.assertTrue( -1 != mockStderr.getvalue().find( 'only one type of list may be specified' ) )
+        self.assertEqual( exit.exception.code, 2 )
+        self.assertTrue( -1 != mockStderr.getvalue().find( 'only one type of list may be specified' ) )
 
     #   test cut - 09. check for characters and fields options together
     def test_charactersAndFieldsOptions( self ):
@@ -293,8 +294,8 @@ class test_cut( unittest.TestCase ):
                 sys.argv = [ 'cut', '--characters=4', '--fields=5' ]
                 cut.main()
 
-            self.assertEqual( exit.exception.code, 2 )
-            self.assertTrue( -1 != mockStderr.getvalue().find( 'only one type of list may be specified' ) )
+        self.assertEqual( exit.exception.code, 2 )
+        self.assertTrue( -1 != mockStderr.getvalue().find( 'only one type of list may be specified' ) )
 
     #   test cut - 10. check for bytes and delimiter options together
     def test_bytesAndDelimiterOptions( self ):
@@ -304,8 +305,8 @@ class test_cut( unittest.TestCase ):
                 sys.argv = [ 'cut', '--bytes=4', '--delimiter=;' ]
                 cut.main()
 
-            self.assertEqual( exit.exception.code, 2 )
-            self.assertTrue( -1 != mockStderr.getvalue().find( 'an input delimiter may be specified only when operating on fields' ) )
+        self.assertEqual( exit.exception.code, 2 )
+        self.assertTrue( -1 != mockStderr.getvalue().find( 'an input delimiter may be specified only when operating on fields' ) )
 
     #   test cut - 11. check for bytes and characters options together
     def test_charactersAndDelimiterOptions( self ):
@@ -315,8 +316,8 @@ class test_cut( unittest.TestCase ):
                 sys.argv = [ 'cut', '--characters=5', '--delimiter=;' ]
                 cut.main()
 
-            self.assertEqual( exit.exception.code, 2 )
-            self.assertTrue( -1 != mockStderr.getvalue().find( 'an input delimiter may be specified only when operating on fields' ) )
+        self.assertEqual( exit.exception.code, 2 )
+        self.assertTrue( -1 != mockStderr.getvalue().find( 'an input delimiter may be specified only when operating on fields' ) )
 
     #   test cut - 12. check for missing parameter for bytes options
     def test_missingParameterForBytesOptions( self ):
@@ -326,8 +327,8 @@ class test_cut( unittest.TestCase ):
                 sys.argv = [ 'cut', '--bytes=' ]
                 cut.main()
 
-            self.assertEqual( exit.exception.code, 2 )
-            self.assertTrue( -1 != mockStderr.getvalue().find( 'argument -b/--bytes=: expected one argument' ) )
+        self.assertEqual( exit.exception.code, 2 )
+        self.assertTrue( -1 != mockStderr.getvalue().find( 'argument -b/--bytes=: expected one argument' ) )
 
     #   test cut - 13. check for invalid parameter for bytes options
     def test_invalidParameterForBytesOptions( self ):
@@ -337,8 +338,8 @@ class test_cut( unittest.TestCase ):
                 sys.argv = [ 'cut', '--bytes=b' ]
                 cut.main()
 
-            self.assertEqual( exit.exception.code, 2 )
-            self.assertTrue( -1 != mockStderr.getvalue().find( 'invalid byte/character position "b"' ) )
+        self.assertEqual( exit.exception.code, 2 )
+        self.assertTrue( -1 != mockStderr.getvalue().find( 'invalid byte/character position "b"' ) )
 
     #   test cut - 14. check for missing parameter for characters options
     def test_missingParameterForCharactersOptions( self ):
@@ -348,8 +349,8 @@ class test_cut( unittest.TestCase ):
                 sys.argv = [ 'cut', '--characters=' ]
                 cut.main()
 
-            self.assertEqual( exit.exception.code, 2 )
-            self.assertTrue( -1 != mockStderr.getvalue().find( 'argument -c/--characters=: expected one argument' ) )
+        self.assertEqual( exit.exception.code, 2 )
+        self.assertTrue( -1 != mockStderr.getvalue().find( 'argument -c/--characters=: expected one argument' ) )
 
     #   test cut - 15. check for invalid parameter for characters options
     def test_invalidParameterForCharactersOptions( self ):
@@ -359,8 +360,8 @@ class test_cut( unittest.TestCase ):
                 sys.argv = [ 'cut', '--characters=c' ]
                 cut.main()
 
-            self.assertEqual( exit.exception.code, 2 )
-            self.assertTrue( -1 != mockStderr.getvalue().find( 'invalid byte/character position "c"' ) )
+        self.assertEqual( exit.exception.code, 2 )
+        self.assertTrue( -1 != mockStderr.getvalue().find( 'invalid byte/character position "c"' ) )
 
     #   test cut - 16. check for missing parameter for fields options
     def test_missingParameterForFieldsOptions( self ):
@@ -370,8 +371,8 @@ class test_cut( unittest.TestCase ):
                 sys.argv = [ 'cut', '--fields=' ]
                 cut.main()
 
-            self.assertEqual( exit.exception.code, 2 )
-            self.assertTrue( -1 != mockStderr.getvalue().find( 'argument -f/--fields=: expected one argument' ) )
+        self.assertEqual( exit.exception.code, 2 )
+        self.assertTrue( -1 != mockStderr.getvalue().find( 'argument -f/--fields=: expected one argument' ) )
 
     #   test cut - 17. check for invalid parameter for fields options
     def test_invalidParameterForFieldsOptions( self ):
@@ -381,8 +382,8 @@ class test_cut( unittest.TestCase ):
                 sys.argv = [ 'cut', '--fields=f' ]
                 cut.main()
 
-            self.assertEqual( exit.exception.code, 2 )
-            self.assertTrue( -1 != mockStderr.getvalue().find( 'invalid byte/character position "f"' ) )
+        self.assertEqual( exit.exception.code, 2 )
+        self.assertTrue( -1 != mockStderr.getvalue().find( 'invalid byte/character position "f"' ) )
 
     #   test cut - 18. check for missing parameter for delimiter option
     def test_missingParameterForDelimiterOption( self ):
@@ -392,8 +393,8 @@ class test_cut( unittest.TestCase ):
                 sys.argv = [ 'cut', '--delimiter=', '--field=2' ]
                 cut.main()
 
-            self.assertEqual( exit.exception.code, 2 )
-            self.assertTrue( -1 != mockStderr.getvalue().find( 'argument -d/--delimiter=: expected one argument' ) )
+        self.assertEqual( exit.exception.code, 2 )
+        self.assertTrue( -1 != mockStderr.getvalue().find( 'argument -d/--delimiter=: expected one argument' ) )
 
     #   test cut - 19. check for invalid parameter for delimiter option
     def test_invalidParameterForDelimiterOption( self ):
@@ -403,9 +404,48 @@ class test_cut( unittest.TestCase ):
                 sys.argv = [ 'cut', '--delimiter=tab', '--field=2' ]
                 cut.main()
 
-            sys.stdout.write( '[debug] result: \'' + mockStderr.getvalue() + '\'\n' )
-            self.assertEqual( exit.exception.code, 2 )
-            self.assertTrue( -1 != mockStderr.getvalue().find( 'the delimiter must be a single character' ) )
+        self.assertEqual( exit.exception.code, 2 )
+        self.assertTrue( -1 != mockStderr.getvalue().find( 'the delimiter must be a single character' ) )
+
+    #   test cut - 20. check for no file names
+    def test_noFileNames( self ):
+
+        with patch( 'sys.stdout', new=StringIO() ) as mockStdout:
+            with patch( 'sys.stdin', new=StringIO( 'abcdef\nghijklm\nnopqrs\ntuvwxyz' ) ) as mockStdin:
+                sys.argv = [ 'cut', '-n', '--bytes=2-3,6' ]
+                cut.main()
+
+        self.assertTrue( 'bcf\nhil\nops\nuvy\n' == mockStdout.getvalue() )
+
+    #   test cut - 21. check for hifen as file name
+    def test_hifenAsFileNames( self ):
+
+        with patch( 'sys.stdout', new=StringIO() ) as mockStdout:
+            with patch( 'sys.stdin', new=StringIO( 'abcdef\nghijklm\nnopqrs\ntuvwxyz' ) ) as mockStdin:
+                sys.argv = [ 'cut', '-n', '--characters=2-3,6', '-' ]
+                cut.main()
+
+        self.assertTrue( 'bcf\nhil\nops\nuvy\n' == mockStdout.getvalue() )
+
+    #   test cut - 22. check for file not found
+    def test_invalidFileName( self ):
+
+        #   remember, a temporary file is removed after it's closed
+        invalidFile = tempfile.NamedTemporaryFile()
+        invalidFileName = invalidFile.name
+        invalidFile.write( b'abcdef\nghijklm\nnopqrs\ntuvwxyz' )
+        invalidFile.close()
+
+        with patch( 'sys.stderr', new=StringIO() ) as mockStderr:
+            sys.argv = [ 'cut', '-n', '--characters=2-3,6', invalidFileName ]
+            cut.main()
+
+#        sys.stdout.write( '[debug] result: \'' + mockStderr.getvalue() + '\'\n' )
+        self.assertTrue( -1 != mockStderr.getvalue().find( 'No such file or directory' ) )
+
+    #   test cut - 23. check for single file name
+    #   test cut - 24. check for multiple file names
+    #   test cut - 25. check for multiple file names, one as hifen
 
 #	entry point
 
