@@ -501,12 +501,28 @@ class test_cut( unittest.TestCase ):
         self.assertTrue( -1 != mockStderr.getvalue().find( 'an input delimiter may be specified only when operating on fields' ) )
 
     #   test main - 12. check for bytes and only delimiter options together
-    #   TODO: implement this test case
+    def test_main_bytesAndOnlyDelimitedOptions( self ):
+
+        with patch( 'sys.stderr', new=StringIO() ) as mockStderr:
+            with self.assertRaises( SystemExit ) as exit:
+                sys.argv = [ 'cut', '--bytes=4', '--only-delimited' ]
+                cut.main()
+
+        self.assertEqual( exit.exception.code, 2 )
+        self.assertTrue( -1 != mockStderr.getvalue().find( 'suppressing non-delimited lines makes sense only when operating on fields' ) )
 
     #   test main - 13. check for characters and only delimiter options together
-    #   TODO: implement this test case
+    def test_main_charactersAndOnlyDelimitedOptions( self ):
 
-    #   test main - 12. check for missing parameter for bytes options
+        with patch( 'sys.stderr', new=StringIO() ) as mockStderr:
+            with self.assertRaises( SystemExit ) as exit:
+                sys.argv = [ 'cut', '--characters=4', '--only-delimited' ]
+                cut.main()
+
+        self.assertEqual( exit.exception.code, 2 )
+        self.assertTrue( -1 != mockStderr.getvalue().find( 'suppressing non-delimited lines makes sense only when operating on fields' ) )
+
+    #   test main - 14. check for missing parameter for bytes options
     def test_main_missingParameterForBytesOptions( self ):
 
         with patch( 'sys.stderr', new=StringIO() ) as mockStderr:
@@ -517,7 +533,7 @@ class test_cut( unittest.TestCase ):
         self.assertEqual( exit.exception.code, 2 )
         self.assertTrue( -1 != mockStderr.getvalue().find( 'argument -b/--bytes=: expected one argument' ) )
 
-    #   test main - 13. check for invalid parameter for bytes options
+    #   test main - 15. check for invalid parameter for bytes options
     def test_main_invalidParameterForBytesOptions( self ):
 
         with patch( 'sys.stderr', new=StringIO() ) as mockStderr:
@@ -528,7 +544,7 @@ class test_cut( unittest.TestCase ):
         self.assertEqual( exit.exception.code, 2 )
         self.assertTrue( -1 != mockStderr.getvalue().find( 'invalid byte/character position "b"' ) )
 
-    #   test main - 14. check for missing parameter for characters options
+    #   test main - 16. check for missing parameter for characters options
     def test_main_missingParameterForCharactersOptions( self ):
 
         with patch( 'sys.stderr', new=StringIO() ) as mockStderr:
@@ -539,7 +555,7 @@ class test_cut( unittest.TestCase ):
         self.assertEqual( exit.exception.code, 2 )
         self.assertTrue( -1 != mockStderr.getvalue().find( 'argument -c/--characters=: expected one argument' ) )
 
-    #   test main - 15. check for invalid parameter for characters options
+    #   test main - 17. check for invalid parameter for characters options
     def test_main_invalidParameterForCharactersOptions( self ):
 
         with patch( 'sys.stderr', new=StringIO() ) as mockStderr:
@@ -550,7 +566,7 @@ class test_cut( unittest.TestCase ):
         self.assertEqual( exit.exception.code, 2 )
         self.assertTrue( -1 != mockStderr.getvalue().find( 'invalid byte/character position "c"' ) )
 
-    #   test main - 16. check for missing parameter for fields options
+    #   test main - 18. check for missing parameter for fields options
     def test_main_missingParameterForFieldsOptions( self ):
 
         with patch( 'sys.stderr', new=StringIO() ) as mockStderr:
@@ -561,7 +577,7 @@ class test_cut( unittest.TestCase ):
         self.assertEqual( exit.exception.code, 2 )
         self.assertTrue( -1 != mockStderr.getvalue().find( 'argument -f/--fields=: expected one argument' ) )
 
-    #   test main - 17. check for invalid parameter for fields options
+    #   test main - 19. check for invalid parameter for fields options
     def test_main_invalidParameterForFieldsOptions( self ):
 
         with patch( 'sys.stderr', new=StringIO() ) as mockStderr:
@@ -572,7 +588,7 @@ class test_cut( unittest.TestCase ):
         self.assertEqual( exit.exception.code, 2 )
         self.assertTrue( -1 != mockStderr.getvalue().find( 'invalid byte/character position "f"' ) )
 
-    #   test main - 18. check for missing parameter for delimiter option
+    #   test main - 20. check for missing parameter for delimiter option
     def test_main_missingParameterForDelimiterOption( self ):
 
         with patch( 'sys.stderr', new=StringIO() ) as mockStderr:
@@ -583,7 +599,7 @@ class test_cut( unittest.TestCase ):
         self.assertEqual( exit.exception.code, 2 )
         self.assertTrue( -1 != mockStderr.getvalue().find( 'argument -d/--delimiter=: expected one argument' ) )
 
-    #   test main - 19. check for invalid parameter for delimiter option
+    #   test main - 21. check for invalid parameter for delimiter option
     def test_main_invalidParameterForDelimiterOption( self ):
 
         with patch( 'sys.stderr', new=StringIO() ) as mockStderr:
@@ -594,7 +610,7 @@ class test_cut( unittest.TestCase ):
         self.assertEqual( exit.exception.code, 2 )
         self.assertTrue( -1 != mockStderr.getvalue().find( 'the delimiter must be a single character' ) )
 
-    #   test main - 20. check for no file names
+    #   test main - 22. check for no file names
     def test_main_noFileNames( self ):
 
         with patch( 'sys.stdout', new=StringIO() ) as mockStdout:
@@ -604,7 +620,7 @@ class test_cut( unittest.TestCase ):
 
         self.assertTrue( 'bcf\nhil\nops\nuvy\n' == mockStdout.getvalue() )
 
-    #   test main - 21. check for hifen as file name
+    #   test main - 23. check for hifen as file name
     def test_main_hifenAsFileNames( self ):
 
         with patch( 'sys.stdout', new=StringIO() ) as mockStdout:
@@ -614,7 +630,7 @@ class test_cut( unittest.TestCase ):
 
         self.assertTrue( 'bcf\nhil\nops\nuvy\n' == mockStdout.getvalue() )
 
-    #   test main - 22. check for file not found
+    #   test main - 24. check for file not found
     def test_main_invalidFileName( self ):
 
         #   remember, a temporary file is removed after it's closed
@@ -629,7 +645,7 @@ class test_cut( unittest.TestCase ):
 
         self.assertTrue( -1 != mockStderr.getvalue().find( 'No such file or directory' ) )
 
-    #   test main - 23. check for single file name
+    #   test main - 25. check for single file name
     def test_main_singleFileName( self ):
 
         contentFile = tempfile.NamedTemporaryFile( delete=False )
@@ -643,7 +659,7 @@ class test_cut( unittest.TestCase ):
         self.assertTrue( 'abc;ghi;jkl\nmno;stu;vwx\n' == mockStdout.getvalue() )
         os.remove( contentFile.name )
 
-    #   test main - 24. check for multiple file names
+    #   test main - 26. check for multiple file names
     def test_main_multipleFileNames( self ):
 
         firstContentFile = tempfile.NamedTemporaryFile( delete=False )
@@ -662,7 +678,7 @@ class test_cut( unittest.TestCase ):
         os.remove( firstContentFile.name )
         os.remove( secondContentFile.name )
 
-    #   test main - 25. check for multiple file names, one as hifen
+    #   test main - 27. check for multiple file names, one as hifen
     def test_main_singleFileNameAndHifen( self ):
 
         contentFile = tempfile.NamedTemporaryFile( delete=False )
