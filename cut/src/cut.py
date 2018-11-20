@@ -17,6 +17,7 @@ BYTES = 'bytes'
 CHARACTERS = 'characters'
 FIELDS = 'fields'
 DELIMITER = 'delimiter'
+ONLY_DELIMITED = 'onlyDelimited'
 OUTPUT_DELIMITER = 'outputDelimiter'
 
 #	function to cut lines from a file to standard output
@@ -35,6 +36,7 @@ def cutLines( _fileHandler, _options ):
                 byte = '\n'
 
         if '\n' == byte:
+            #   TODO: implement the complement feature
             if BYTES in _options:
                 for range in _options[ BYTES ]:
                     if 0 == range[ 1 ]:
@@ -48,6 +50,10 @@ def cutLines( _fileHandler, _options ):
                     else:
                         sys.stdout.write( line[ range[ 0 ]:range[ 1 ] ] )
             elif FIELDS in _options:
+                if ONLY_DELIMITED in _options and -1 == line.find( _options[ DELIMITER ] ):
+                    line = ''
+                    continue
+
                 firstField = True
                 fields = line.split( _options[ DELIMITER ] )
                 for range in _options[ FIELDS ]:
@@ -114,6 +120,9 @@ def main():
     parser.add_argument( '-d', '--delimiter=', dest='delimiter', action='store', help='use DELIM instead of TAB for field delimiter' )
     parser.add_argument( '-f', '--fields=', dest='fields', action='store', help='select only these fields; also print any line that contains no delimiter character, unless the -s option is specified' )
     parser.add_argument( '-n', dest='ignored', action='store_true', help='(ignored)' )
+    parser.add_argument( '--complement', dest='complement', action='store_true', help='complement the set of selected bytes, characters or fields' )
+    parser.add_argument( '-s', '--only-delimited', dest='onlyDelimited', action='store_true', help='complement the set of selected bytes, characters' )
+    parser.add_argument( '--output-delimiter=', dest='outputDelimiter', action='store', help='use STRING as the output delimiter, the default is to use the input delimiter' )
     parser.add_argument( '--version', dest='version', action='store_true', help='output version information and exit' )
 
     parser.add_argument( dest='fileNames', nargs='*' )
@@ -137,6 +146,9 @@ def main():
     if args.delimiter is not None and ( args.bytes is not None or args.characters is not None ):
         parser.error( 'an input delimiter may be specified only when operating on fields' )
 
+    if True == args.onlyDelimited and ( args.bytes is not None or args.characters is not None ):
+        parser.error( 'suppressing non-delimited lines makes sense only when operating on fields' )
+
     #   set the options
     options = {}
 
@@ -159,7 +171,15 @@ def main():
         else:
             parser.error( 'the delimiter must be a single character' )
 
-    options[ OUTPUT_DELIMITER ] = options[ DELIMITER ]
+    #   TODO: parse the --commplement option
+
+    if True == args.onlyDelimited:
+        options[ ONLY_DELIMITED ] = True
+
+    if args.outputDelimiter is None:
+        options[ OUTPUT_DELIMITER ] = options[ DELIMITER ]
+    else:
+        options[ OUTPUT_DELIMITER ] = args.delimiter
 
     #   read the input file and cut lines to stdout
     if 0 == len( args.fileNames ):

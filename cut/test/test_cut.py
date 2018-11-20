@@ -165,7 +165,7 @@ class test_cut( unittest.TestCase ):
         self.assertTrue( 'bcf\nhil\nops\nuvy\n' == mockStdout.getvalue() )
 
     #   test cutLines - 14. out of range in single column
-    def test_cutLine_outOfRangeInSingleColumn( self ):
+    def test_cutLine_bytesOutOfRangeInSingleColumn( self ):
 
         with patch( 'sys.stdout', new=StringIO() ) as mockStdout:
             inputFile = StringIO( 'abcdef\nghijklm\nnopqrs\ntuvwxyz' )
@@ -176,7 +176,7 @@ class test_cut( unittest.TestCase ):
         self.assertTrue( '\nm\n\nz\n' == mockStdout.getvalue() )
 
     #   test cutLines - 15. out of range in column range from begin
-    def test_cutLine_outOfRangeInColumnRangeFromBegin( self ):
+    def test_cutLine_bytesOutOfRangeInColumnRangeFromBegin( self ):
 
         with patch( 'sys.stdout', new=StringIO() ) as mockStdout:
             inputFile = StringIO( 'abcdef\nghijklm\nnopqrs\ntuvwxyz' )
@@ -187,7 +187,7 @@ class test_cut( unittest.TestCase ):
         self.assertTrue( 'abcdef\nghijklm\nnopqrs\ntuvwxyz\n' == mockStdout.getvalue() )
 
     #   test cutLines - 16. out of range in column range to end
-    def test_cutLine_outOfRangeInColumnRangeToEnd( self ):
+    def test_cutLine_bytesOutOfRangeInColumnRangeToEnd( self ):
 
         with patch( 'sys.stdout', new=StringIO() ) as mockStdout:
             inputFile = StringIO( 'abcdef\nghijklm\nnopqrs\ntuvwxyz' )
@@ -219,7 +219,7 @@ class test_cut( unittest.TestCase ):
 
         self.assertTrue( 'd\n' == mockStdout.getvalue() )
 
-    #   test cutLines - 18. cut multiple lines and a single column
+    #   test cutLines - 19. cut multiple lines and a single column
     def test_cutLine_charactersMultipleLinesAndSingleColumn01( self ):
 
         with patch( 'sys.stdout', new=StringIO() ) as mockStdout:
@@ -230,7 +230,7 @@ class test_cut( unittest.TestCase ):
 
         self.assertTrue( 'd\nj\nq\nw\n' == mockStdout.getvalue() )
 
-    #   test cutLines - 19. cut multiple lines (no LF at the end) and a single column
+    #   test cutLines - 20. cut multiple lines (no LF at the end) and a single column
     def test_cutLine_charactersMultipleLinesAndSingleColumn02( self ):
 
         with patch( 'sys.stdout', new=StringIO() ) as mockStdout:
@@ -242,8 +242,140 @@ class test_cut( unittest.TestCase ):
         sys.stderr.write( '[debug] result: \'' + mockStdout.getvalue() + '\'\n' )
         self.assertTrue( 'd\nj\nq\nw\n' == mockStdout.getvalue() )
 
-    #   TODO: copy the tests 5-16 and replace the byts cut for characters cut
+    #   test cutLines - 21. cut a single line and a range of colums starting from begin
+    def test_cutLine_charactersSingleLineAndRangeFromBegin( self ):
+
+        with patch( 'sys.stdout', new=StringIO() ) as mockStdout:
+            inputFile = StringIO( 'abcdefghijklm\n' )
+            options = { 'characters': [ [ 0, 4 ] ] }
+
+            cut.cutLines( inputFile, options )
+
+        self.assertTrue( 'abcd\n' == mockStdout.getvalue() )
+
+    #   test cutLines - 22. cut multiple lines and a range of colums starting from begin
+    def test_cutLine_charactersMultipleLinesAndRangeFromBegin( self ):
+
+        with patch( 'sys.stdout', new=StringIO() ) as mockStdout:
+            inputFile = StringIO( 'abcdef\nghijklm\nnopqrs\ntuvwxyz\n' )
+            options = { 'characters': [ [ 0, 4 ] ] }
+
+            cut.cutLines( inputFile, options )
+
+        self.assertTrue( 'abcd\nghij\nnopq\ntuvw\n' == mockStdout.getvalue() )
+
+    #   test cutLines - 23. cut a single line and a range of colums to the end
+    def test_cutLine_charactersSingleLineAndRangeToEnd( self ):
+
+        with patch( 'sys.stdout', new=StringIO() ) as mockStdout:
+            inputFile = StringIO( 'abcdefghijklm\n' )
+            options = { 'characters': [ [ 4, 0 ] ] }
+
+            cut.cutLines( inputFile, options )
+
+        self.assertTrue( 'efghijklm\n' == mockStdout.getvalue() )
+
+    #   test cutLines - 24. cut multiple lines and a range of colums to the end
+    def test_cutLine_charactersMultipleLinesAndRangeToEnd( self ):
+
+        with patch( 'sys.stdout', new=StringIO() ) as mockStdout:
+            inputFile = StringIO( 'abcdef\nghijklm\nnopqrs\ntuvwxyz\n' )
+            options = { 'characters': [ [ 4, 0 ] ] }
+
+            cut.cutLines( inputFile, options )
+
+        self.assertTrue( 'ef\nklm\nrs\nxyz\n' == mockStdout.getvalue() )
+
+    #   test cutLines - 25. cut a single line and a range of colums
+    def test_cutLine_charactersSingleLineAndRange( self ):
+
+        with patch( 'sys.stdout', new=StringIO() ) as mockStdout:
+            inputFile = StringIO( 'abcdefghijklm\n' )
+            options = { 'characters': [ [ 4, 8 ] ] }
+
+            cut.cutLines( inputFile, options )
+
+        self.assertTrue( 'efgh\n' == mockStdout.getvalue() )
+
+    #   test cutLines - 26. cut multiple lines and a range of colums
+    def test_cutLine_charactersMultipleLinesAndRange( self ):
+
+        with patch( 'sys.stdout', new=StringIO() ) as mockStdout:
+            inputFile = StringIO( 'abcdef\nghijklm\nnopqrs\ntuvwxyz\n' )
+            options = { 'characters': [ [ 2, 5 ] ] }
+
+            cut.cutLines( inputFile, options )
+
+        self.assertTrue( 'cde\nijk\npqr\nvwx\n' == mockStdout.getvalue() )
+
+    #   test cutLines - 27. cut multiple lines combining single column and a range from begin
+    def test_cutLine_charactersMultipleLinesAndSingleColumnAndRangeFromBegin( self ):
+
+        with patch( 'sys.stdout', new=StringIO() ) as mockStdout:
+            inputFile = StringIO( 'abcdef\nghijklm\nnopqrs\ntuvwxyz' )
+            options = { 'characters': [ [ 5, 6 ], [ 0, 2 ] ] }
+
+            cut.cutLines( inputFile, options )
+
+        self.assertTrue( 'fab\nlgh\nsno\nytu\n' == mockStdout.getvalue() )
+
+    #   test cutLines - 28. cut multiple lines combining single column and a range to end
+    def test_cutLine_charactersMultipleLinesAndSingleColumnAndRangeToEnd( self ):
+
+        with patch( 'sys.stdout', new=StringIO() ) as mockStdout:
+            inputFile = StringIO( 'abcdef\nghijklm\nnopqrs\ntuvwxyz' )
+            options = { 'characters': [ [ 4, 0 ], [ 2, 3 ] ] }
+
+            cut.cutLines( inputFile, options )
+
+        self.assertTrue( 'efc\nklmi\nrsp\nxyzv\n' == mockStdout.getvalue() )
+
+    #   test cutLines - 29. cut multiple lines combining single column and a range
+    def test_cutLine_charactersMultipleLinesAndSingleColumnAndRange( self ):
+
+        with patch( 'sys.stdout', new=StringIO() ) as mockStdout:
+            inputFile = StringIO( 'abcdef\nghijklm\nnopqrs\ntuvwxyz' )
+            options = { 'characters': [ [ 1, 3 ], [ 5, 6 ] ] }
+
+            cut.cutLines( inputFile, options )
+
+        self.assertTrue( 'bcf\nhil\nops\nuvy\n' == mockStdout.getvalue() )
+
+    #   test cutLines - 30. out of range in single column
+    def test_cutLine_charactersOutOfRangeInSingleColumn( self ):
+
+        with patch( 'sys.stdout', new=StringIO() ) as mockStdout:
+            inputFile = StringIO( 'abcdef\nghijklm\nnopqrs\ntuvwxyz' )
+            options = { 'characters': [ [ 6, 7 ] ] }
+
+            cut.cutLines( inputFile, options )
+
+        self.assertTrue( '\nm\n\nz\n' == mockStdout.getvalue() )
+
+    #   test cutLines - 31. out of range in column range from begin
+    def test_cutLine_charactersOutOfRangeInColumnRangeFromBegin( self ):
+
+        with patch( 'sys.stdout', new=StringIO() ) as mockStdout:
+            inputFile = StringIO( 'abcdef\nghijklm\nnopqrs\ntuvwxyz' )
+            options = { 'characters': [ [ 0, 7 ] ] }
+
+            cut.cutLines( inputFile, options )
+
+        self.assertTrue( 'abcdef\nghijklm\nnopqrs\ntuvwxyz\n' == mockStdout.getvalue() )
+
+    #   test cutLines - 32. out of range in column range to end
+    def test_cutLine_charactersOutOfRangeInColumnRangeToEnd( self ):
+
+        with patch( 'sys.stdout', new=StringIO() ) as mockStdout:
+            inputFile = StringIO( 'abcdef\nghijklm\nnopqrs\ntuvwxyz' )
+            options = { 'characters': [ [ 6, 0 ] ] }
+
+            cut.cutLines( inputFile, options )
+
+        self.assertTrue( '\nm\n\nz\n' == mockStdout.getvalue() )
+
     #   TODO: copy the tests 1-16 and replace the byts cut for fields cut
+    #   TODO: add test cases for the only delimited option
 
     #   cut.parseRanges() function tests
     #   TODO: write all test cases for this function
@@ -357,7 +489,7 @@ class test_cut( unittest.TestCase ):
         self.assertEqual( exit.exception.code, 2 )
         self.assertTrue( -1 != mockStderr.getvalue().find( 'an input delimiter may be specified only when operating on fields' ) )
 
-    #   test main - 11. check for bytes and characters options together
+    #   test main - 11. check for characters and delimiter options together
     def test_main_charactersAndDelimiterOptions( self ):
 
         with patch( 'sys.stderr', new=StringIO() ) as mockStderr:
@@ -367,6 +499,12 @@ class test_cut( unittest.TestCase ):
 
         self.assertEqual( exit.exception.code, 2 )
         self.assertTrue( -1 != mockStderr.getvalue().find( 'an input delimiter may be specified only when operating on fields' ) )
+
+    #   test main - 12. check for bytes and only delimiter options together
+    #   TODO: implement this test case
+
+    #   test main - 13. check for characters and only delimiter options together
+    #   TODO: implement this test case
 
     #   test main - 12. check for missing parameter for bytes options
     def test_main_missingParameterForBytesOptions( self ):
