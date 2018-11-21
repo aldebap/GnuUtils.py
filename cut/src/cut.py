@@ -19,10 +19,15 @@ FIELDS = 'fields'
 DELIMITER = 'delimiter'
 ONLY_DELIMITED = 'onlyDelimited'
 OUTPUT_DELIMITER = 'outputDelimiter'
+COMPLEMENT = 'complement'
 
 #	function to cut lines from a file to standard output
 
 def cutLines( _fileHandler, _options ):
+
+    #   if cut fields option and an output delimiter is not set, make it the input delimiter
+    if FIELDS in _options and OUTPUT_DELIMITER not in _options:
+        _options[ OUTPUT_DELIMITER ] = _options[ DELIMITER ]
 
     line = ''
 
@@ -36,25 +41,30 @@ def cutLines( _fileHandler, _options ):
                 byte = '\n'
 
         if '\n' == byte:
-            #   TODO: implement the complement feature
+            result = ''
+
+            #   cut selected bytes from the line
             if BYTES in _options:
                 for range in _options[ BYTES ]:
                     if 0 == range[ 1 ]:
-                        sys.stdout.write( line[ range[ 0 ]: ] )
+                        result = result + line[ range[ 0 ]: ]
                     else:
-                        sys.stdout.write( line[ range[ 0 ]:range[ 1 ] ] )
+                        result = result + line[ range[ 0 ]:range[ 1 ] ]
+
+            #   cut selected characters from the line
             elif CHARACTERS in _options:
                 for range in _options[ CHARACTERS ]:
                     if 0 == range[ 1 ]:
-                        sys.stdout.write( line[ range[ 0 ]: ] )
+                        result = result + line[ range[ 0 ]: ]
                     else:
-                        sys.stdout.write( line[ range[ 0 ]:range[ 1 ] ] )
+                        result = result + line[ range[ 0 ]:range[ 1 ] ]
+
+            #   cut selected fields from the line
             elif FIELDS in _options:
                 if ONLY_DELIMITED in _options and -1 == line.find( _options[ DELIMITER ] ):
                     line = ''
                     continue
 
-                firstField = True
                 fields = line.split( _options[ DELIMITER ] )
                 for range in _options[ FIELDS ]:
                     cutFields = []
@@ -63,15 +73,42 @@ def cutLines( _fileHandler, _options ):
                     else:
                         cutFields = fields[ range[ 0 ]:range[ 1 ] ]
 
+                    #   fields are separated by the output delimiter
                     for field in cutFields:
-                        if True == firstField:
-                            sys.stdout.write( field )
+                        if 0 == len( result ):
+                            result = field
                         else:
-                            sys.stdout.write( _options[ OUTPUT_DELIMITER ] + field )
-                        firstField = False
+                            result = result + _options[ OUTPUT_DELIMITER ] + field
+
+            #   if complement option wasn't chosen, print the result
+            if COMPLEMENT not in _options:
+                sys.stdout.write( result + '\n' )
             else:
-                sys.stdout.write( line )
-            sys.stdout.write( '\n' )
+                complementResult = ''
+
+                #   complement result are all bytes in the line but those that were cut
+                if BYTES in _options:
+                    for byteAux in line:
+                        if byteAux not in result:
+                            complementResult = complementResult + byteAux
+
+                #   complement result are all characters in the line but those that were cut
+                elif CHARACTERS in _options:
+                    for characterAux in line:
+                        if characterAux not in result:
+                            complementResult = complementResult + characterAux
+
+                #   complement result are all fields in the line but those that were cut
+                elif FIELDS in _options:
+                    for field in line.split( _options[ DELIMITER ] ):
+                        if -1 == result.find( field ):
+                            if 0 == len( complementResult ):
+                                complementResult = field
+                            else:
+                                complementResult = complementResult + _options[ OUTPUT_DELIMITER ] + field
+
+                sys.stdout.write( complementResult + '\n' )
+
             line = ''
             continue
 
@@ -171,15 +208,14 @@ def main():
         else:
             parser.error( 'the delimiter must be a single character' )
 
-    #   TODO: parse the --commplement option
+    if True == args.complement:
+        options[ COMPLEMENT ] = True
 
     if True == args.onlyDelimited:
         options[ ONLY_DELIMITED ] = True
 
-    if args.outputDelimiter is None:
-        options[ OUTPUT_DELIMITER ] = options[ DELIMITER ]
-    else:
-        options[ OUTPUT_DELIMITER ] = args.delimiter
+    if args.outputDelimiter is not None:
+        options[ OUTPUT_DELIMITER ] = args.outputDelimiter
 
     #   read the input file and cut lines to stdout
     if 0 == len( args.fileNames ):
