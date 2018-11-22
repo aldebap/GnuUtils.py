@@ -20,6 +20,7 @@ DELIMITER = 'delimiter'
 ONLY_DELIMITED = 'onlyDelimited'
 OUTPUT_DELIMITER = 'outputDelimiter'
 COMPLEMENT = 'complement'
+ZERO_TERMINATED = 'zeroTerminated'
 
 #	function to cut lines from a file to standard output
 
@@ -28,6 +29,12 @@ def cutLines( _fileHandler, _options ):
     #   if cut fields option and an output delimiter is not set, make it the input delimiter
     if FIELDS in _options and OUTPUT_DELIMITER not in _options:
         _options[ OUTPUT_DELIMITER ] = _options[ DELIMITER ]
+
+    #   if zero delimited option, set NUL as the input line delimiter
+    lineDelimiter = '\n'
+
+    if ZERO_TERMINATED in _options:
+        lineDelimiter = '\0x00'
 
     line = ''
 
@@ -38,9 +45,9 @@ def cutLines( _fileHandler, _options ):
             if 0 == len( line ):
                 break
             else:
-                byte = '\n'
+                byte = lineDelimiter
 
-        if '\n' == byte:
+        if lineDelimiter == byte:
             result = ''
 
             #   cut selected bytes from the line
@@ -82,7 +89,7 @@ def cutLines( _fileHandler, _options ):
 
             #   if complement option wasn't chosen, print the result
             if COMPLEMENT not in _options:
-                sys.stdout.write( result + '\n' )
+                sys.stdout.write( result + lineDelimiter )
             else:
                 complementResult = ''
 
@@ -107,7 +114,7 @@ def cutLines( _fileHandler, _options ):
                             else:
                                 complementResult = complementResult + _options[ OUTPUT_DELIMITER ] + field
 
-                sys.stdout.write( complementResult + '\n' )
+                sys.stdout.write( complementResult + lineDelimiter )
 
             line = ''
             continue
@@ -160,6 +167,7 @@ def main():
     parser.add_argument( '--complement', dest='complement', action='store_true', help='complement the set of selected bytes, characters or fields' )
     parser.add_argument( '-s', '--only-delimited', dest='onlyDelimited', action='store_true', help='complement the set of selected bytes, characters' )
     parser.add_argument( '--output-delimiter=', dest='outputDelimiter', action='store', help='use STRING as the output delimiter, the default is to use the input delimiter' )
+    parser.add_argument( '-z', '--zero-terminated', dest='zeroTerminated', action='store_true', help='line delimiter is NUL, not newline' )
     parser.add_argument( '--version', dest='version', action='store_true', help='output version information and exit' )
 
     parser.add_argument( dest='fileNames', nargs='*' )
@@ -216,6 +224,9 @@ def main():
 
     if args.outputDelimiter is not None:
         options[ OUTPUT_DELIMITER ] = args.outputDelimiter
+
+    if True == args.zeroTerminated:
+        options[ ZERO_TERMINATED ] = True
 
     #   read the input file and cut lines to stdout
     if 0 == len( args.fileNames ):
