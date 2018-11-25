@@ -26,6 +26,10 @@ ZERO_TERMINATED = 'zeroTerminated'
 
 def cutLines( _fileHandler, _options ):
 
+    #   if cut fields option and a delimiter is not set, make it the TAB
+    if FIELDS in _options and DELIMITER not in _options:
+        _options[ DELIMITER ] = '\t'
+
     #   if cut fields option and an output delimiter is not set, make it the input delimiter
     if FIELDS in _options and OUTPUT_DELIMITER not in _options:
         _options[ OUTPUT_DELIMITER ] = _options[ DELIMITER ]
@@ -206,9 +210,7 @@ def main():
     if args.fields is not None:
         options[ FIELDS ] = parseRanges( parser, args.fields )
 
-    if args.delimiter is None:
-        options[ DELIMITER ] = '\t'
-    else:
+    if args.delimiter is not None:
         if 0 == len( args.delimiter ):
             parser.error( 'option requires an argument -- \'d\'' )
         elif 1 == len( args.delimiter ):
