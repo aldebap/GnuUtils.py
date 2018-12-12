@@ -8,7 +8,6 @@
 
 import argparse
 import os.path
-import re
 import sys
 
 #   constants to options
@@ -21,23 +20,45 @@ REVERSE = 'reverse'
 
 def sortFile( _fileHandler, _options ):
 
+    inputLines = []
+
+    #   read the input file
     line = ''
 
     while True:
         byte = _fileHandler.read( 1 )
         if '' == byte:
             #   if there's a last line without a LF, make it be processed
-            if 0 == len( line ):
-                break
-            else:
-                byte = '\n'
+            if 0 < len( line ):
+                inputLines.append( line )
+            break
 
-        sys.stdout.write( line + '\n' )
-
-#        line = ''
-#        continue
+        if '\n' == byte:
+            inputLines.append( line )
+            line = ''
+            continue
 
         line = line + byte
+
+    #   sort the original input
+    sortedLines = []
+
+    for line in inputLines:
+        inserted = False
+
+        if 0 < len( sortedLines ):
+            for i in range( len( sortedLines ) ):
+                if sortedLines[ i ] > line:
+                    sortedLines.insert( i, line )
+                    inserted = True
+                    break
+
+        if False == inserted:
+            sortedLines.append( line )
+
+    #   print the ordered input
+    for line in sortedLines:
+        sys.stdout.write( line + '\n' )
 
 #	entry point
 
@@ -56,8 +77,8 @@ def main():
     args = parser.parse_args()
 
     if True == args.version:
-        sys.stdout.write( 'This is free software: you are free to change and redistribute it.' )
-        sys.stdout.write( 'Written by Aldebaran Perseke (github.com/aldebap)' )
+        sys.stdout.write( 'This is free software: you are free to change and redistribute it.\n' )
+        sys.stdout.write( 'Written by Aldebaran Perseke (github.com/aldebap)\n' )
         return
 
     #   validate the options

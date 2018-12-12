@@ -17,22 +17,22 @@ import sort
 
 #   Unit tests class
 
-class test_cut( unittest.TestCase ):
+class test_sort( unittest.TestCase ):
 
-    #   cut.sortFile() function tests
+    #   sort.sortFile() function tests
 
     #   test sortFile - 01. sort without options
     def test_sortFile_noOptions( self ):
 
         with patch( 'sys.stdout', new=StringIO() ) as mockStdout:
-            inputFile = StringIO( 'abcdef\nghijklm\n' )
+            inputFile = StringIO( 'def\nabc\njkl\nghi' )
             options = {}
 
             sort.sortFile( inputFile, options )
 
-        self.assertTrue( 'abcdef\nghijklm\n' == mockStdout.getvalue() )
+        self.assertTrue( 'abc\ndef\nghi\njkl\n' == mockStdout.getvalue() )
 
-    #   cut.main() function tests
+    #   sort.main() function tests
 
     #   test main - 01. check for no required options
     def test_main_withoutOptions( self ):
@@ -82,21 +82,21 @@ class test_cut( unittest.TestCase ):
     def test_main_noFileNames( self ):
 
         with patch( 'sys.stdout', new=StringIO() ) as mockStdout:
-            with patch( 'sys.stdin', new=StringIO( 'abcdef\nghijklm\nnopqrs\ntuvwxyz' ) ) as mockStdin:
-                sys.argv = [ 'cut', '--bytes=2-3,6' ]
+            with patch( 'sys.stdin', new=StringIO( 'def\nabc\njkl\nghi' ) ) as mockStdin:
+                sys.argv = [ 'sort' ]
                 sort.main()
 
-        self.assertTrue( 'bcf\nhil\nops\nuvy\n' == mockStdout.getvalue() )
+        self.assertTrue( 'abc\ndef\nghi\njkl\n' == mockStdout.getvalue() )
 
     #   test main - 23. check for hifen as file name
     def test_main_hifenAsFileNames( self ):
 
         with patch( 'sys.stdout', new=StringIO() ) as mockStdout:
-            with patch( 'sys.stdin', new=StringIO( 'abcdef\nghijklm\nnopqrs\ntuvwxyz' ) ) as mockStdin:
-                sys.argv = [ 'cut', '--characters=2-3,6', '-' ]
+            with patch( 'sys.stdin', new=StringIO( 'def\njkl\nabc\nmno\nxyz\nghi' ) ) as mockStdin:
+                sys.argv = [ 'sort', '-' ]
                 sort.main()
 
-        self.assertTrue( 'bcf\nhil\nops\nuvy\n' == mockStdout.getvalue() )
+        self.assertTrue( 'abc\ndef\nghi\njkl\nmno\nxyz' == mockStdout.getvalue() )
 
     #   test main - 24. check for file not found
     def test_main_invalidFileName( self ):
@@ -108,7 +108,7 @@ class test_cut( unittest.TestCase ):
         invalidFile.close()
 
         with patch( 'sys.stderr', new=StringIO() ) as mockStderr:
-            sys.argv = [ 'cut', '--characters=2-3,6', invalidFileName ]
+            sys.argv = [ 'sort', invalidFileName ]
             sort.main()
 
         self.assertTrue( -1 != mockStderr.getvalue().find( 'No such file or directory' ) )
@@ -117,14 +117,14 @@ class test_cut( unittest.TestCase ):
     def test_main_singleFileName( self ):
 
         contentFile = tempfile.NamedTemporaryFile( delete=False )
-        contentFile.write( b'abc;def;ghi;jkl\nmno;pqr;stu;vwx;yz\n' )
+        contentFile.write( b'def\njkl\nabc\nmno\nxyz\nghi' )
         contentFile.close()
 
         with patch( 'sys.stdout', new=StringIO() ) as mockStdout:
-            sys.argv = [ 'cut', '--fields=1,3-4', '--delimiter=;', contentFile.name ]
+            sys.argv = [ 'sort', contentFile.name ]
             sort.main()
 
-        self.assertTrue( 'abc;ghi;jkl\nmno;stu;vwx\n' == mockStdout.getvalue() )
+        self.assertTrue( 'abc\ndef\nghi\njkl\nmno\nxyz' == mockStdout.getvalue() )
         os.remove( contentFile.name )
 
     #   test main - 26. check for multiple file names
@@ -139,7 +139,7 @@ class test_cut( unittest.TestCase ):
         secondContentFile.close()
 
         with patch( 'sys.stdout', new=StringIO() ) as mockStdout:
-            sys.argv = [ 'cut', '--bytes=1,3-4', firstContentFile.name, secondContentFile.name ]
+            sys.argv = [ 'sort', firstContentFile.name, secondContentFile.name ]
             sort.main()
 
         self.assertTrue( 'acd\ngij\nmop\nsuv\n' == mockStdout.getvalue() )
@@ -155,7 +155,7 @@ class test_cut( unittest.TestCase ):
 
         with patch( 'sys.stdout', new=StringIO() ) as mockStdout:
             with patch( 'sys.stdin', new=StringIO( 'mnopqr\nstuvwxyz\n' ) ) as mockStdin:
-                sys.argv = [ 'cut', '--characters=1,3,5-6', contentFile.name, '-' ]
+                sys.argv = [ 'sort', contentFile.name, '-' ]
                 sort.main()
 
         #   sys.stderr.write( '[debug] result: \'' + mockStdout.getvalue() + '\'\n' )
