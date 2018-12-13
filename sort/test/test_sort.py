@@ -111,7 +111,7 @@ class test_sort( unittest.TestCase ):
         self.assertEqual( exit.exception.code, 2 )
         self.assertTrue( -1 != mockStderr.getvalue().find( 'unrecognized arguments: -a' ) )
 
-    #   TODO: there are some tests in between
+    #   TODO: are there some tests in between ??
 
     #   test main - 22. check for no file names
     def test_main_noFileNames( self ):
@@ -196,6 +196,16 @@ class test_sort( unittest.TestCase ):
         #   sys.stderr.write( '[debug] result: \'' + mockStdout.getvalue() + '\'\n' )
         self.assertTrue( 'abcdef\nghijkl\nmnopqr\nstuvwxyz\n' == mockStdout.getvalue() )
         os.remove( contentFile.name )
+
+    #   test main - 28. check for no file names and ignore leading blanks option
+    def test_main_stdin_ignoreLeadingBlanks( self ):
+
+        with patch( 'sys.stdout', new=StringIO() ) as mockStdout:
+            with patch( 'sys.stdin', new=StringIO( ' def\n  abc\n   jkl\n    ghi' ) ) as mockStdin:
+                sys.argv = [ 'sort', '--ignore-leading-blanks' ]
+                sort.main()
+
+        self.assertTrue( '  abc\n def\n    ghi\n   jkl\n' == mockStdout.getvalue() )
 
 #	entry point
 
