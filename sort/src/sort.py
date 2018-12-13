@@ -16,9 +16,9 @@ IGNORE_LEADING_BLANKS = 'ignoreLeadingBlanks'
 IGNORE_CASE = 'ignoreCase'
 REVERSE = 'reverse'
 
-#	function to sort lines from a file to standard output
+#	function to read lines from a file
 
-def sortFile( _fileHandler, _options ):
+def readFile( _fileHandler ):
 
     inputLines = []
 
@@ -40,10 +40,16 @@ def sortFile( _fileHandler, _options ):
 
         line = line + byte
 
+    return inputLines
+
+#	function to sort lines to standard output
+
+def sortLines( _inputLines, _options ):
+
     #   sort the original input
     sortedLines = []
 
-    for line in inputLines:
+    for line in _inputLines:
         inserted = False
 
         if 0 < len( sortedLines ):
@@ -96,19 +102,23 @@ def main():
         options[ REVERSE ] = True
 
     #   read the input file and cut lines to stdout
+    inputLines = []
+
     if 0 == len( args.fileNames ):
-        sortFile( sys.stdin, options )
+        inputLines = readFile( sys.stdin )
     else:
         for fileName in args.fileNames:
             if '-' == fileName:
-                sortFile( sys.stdin, options )
+                inputLines = inputLines + readFile( sys.stdin )
             else:
                 if os.path.isfile( fileName ):
                     with open( fileName, 'r' ) as inputFile:
-                        sortFile( inputFile, options )
+                        inputLines = inputLines + readFile( inputFile )
                         inputFile.close()
                 else:
                     sys.stderr.write( parser.prog + ': ' + fileName + ': No such file or directory\n' )
+
+    sortLines( inputLines, options )
 
 #	entry point
 
