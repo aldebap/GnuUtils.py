@@ -57,6 +57,17 @@ class test_sort( unittest.TestCase ):
 
         self.assertTrue( 'abc\ndef\nghi\njkl\n' == mockStdout.getvalue() )
 
+    #   test sortLines - 02. sort ignore leading blanks
+    def test_sortLines_ignoreLeadingBlanks( self ):
+
+        with patch( 'sys.stdout', new=StringIO() ) as mockStdout:
+            inputLines = [ ' def', '  abc', '   jkl', '    ghi' ]
+            options = { 'ignoreLeadingBlanks': True }
+
+            sort.sortLines( inputLines, options )
+
+        self.assertTrue( '  abc\n def\n    ghi\n   jkl\n' == mockStdout.getvalue() )
+
     #   sort.main() function tests
 
     #   test main - 01. check for no required options

@@ -52,9 +52,17 @@ def sortLines( _inputLines, _options ):
     for line in _inputLines:
         inserted = False
 
+        addingLine = line
+        if IGNORE_LEADING_BLANKS in _options:
+            addingLine = addingLine.lstrip()
+
         if 0 < len( sortedLines ):
             for i in range( len( sortedLines ) ):
-                if sortedLines[ i ] > line:
+                comparingLine = sortedLines[ i ]
+                if IGNORE_LEADING_BLANKS in _options:
+                    comparingLine = comparingLine.lstrip()
+
+                if comparingLine > addingLine:
                     sortedLines.insert( i, line )
                     inserted = True
                     break
