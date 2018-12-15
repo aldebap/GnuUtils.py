@@ -55,12 +55,16 @@ def sortLines( _inputLines, _options ):
         addingLine = line
         if IGNORE_LEADING_BLANKS in _options:
             addingLine = addingLine.lstrip()
+        if IGNORE_CASE in _options:
+            addingLine = addingLine.upper()
 
         if 0 < len( sortedLines ):
             for i in range( len( sortedLines ) ):
                 comparingLine = sortedLines[ i ]
                 if IGNORE_LEADING_BLANKS in _options:
                     comparingLine = comparingLine.lstrip()
+                if IGNORE_CASE in _options:
+                    comparingLine = comparingLine.upper()
 
                 if comparingLine > addingLine:
                     sortedLines.insert( i, line )
@@ -71,8 +75,15 @@ def sortLines( _inputLines, _options ):
             sortedLines.append( line )
 
     #   print the ordered input
-    for line in sortedLines:
-        sys.stdout.write( line + '\n' )
+#    for line in sortedLines:
+#        sys.stdout.write( line + '\n' )
+    lines = len( sortedLines )
+
+    for i in range( lines ):
+        if REVERSE not in _options:
+            sys.stdout.write( sortedLines[ i ] + '\n' )
+        else:
+            sys.stdout.write( sortedLines[ lines - i - 1 ] + '\n' )
 
 #	entry point
 

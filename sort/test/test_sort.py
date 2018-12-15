@@ -57,7 +57,18 @@ class test_sort( unittest.TestCase ):
 
         self.assertTrue( 'abc\ndef\nghi\njkl\n' == mockStdout.getvalue() )
 
-    #   test sortLines - 02. sort ignore leading blanks
+    #   test main - 02. sort with leading blanks
+    def test_sortLines_withLeadingBlanks( self ):
+
+        with patch( 'sys.stdout', new=StringIO() ) as mockStdout:
+            inputLines = [ ' def', '  abc', '   jkl', '    ghi' ]
+            options = {}
+
+            sort.sortLines( inputLines, options )
+
+        self.assertTrue( '    ghi\n   jkl\n  abc\n def\n' == mockStdout.getvalue() )
+
+    #   test sortLines - 03. sort ignore leading blanks
     def test_sortLines_ignoreLeadingBlanks( self ):
 
         with patch( 'sys.stdout', new=StringIO() ) as mockStdout:
@@ -67,6 +78,40 @@ class test_sort( unittest.TestCase ):
             sort.sortLines( inputLines, options )
 
         self.assertTrue( '  abc\n def\n    ghi\n   jkl\n' == mockStdout.getvalue() )
+
+    #   test main - 04. sort with case differences
+    def test_sortLines_withCaseDifferences( self ):
+
+        with patch( 'sys.stdout', new=StringIO() ) as mockStdout:
+            inputLines = [ 'DEF', 'abc', 'JKL', 'ghi' ]
+            options = {}
+
+            sort.sortLines( inputLines, options )
+
+        self.assertTrue( 'DEF\nJKL\nabc\nghi\n' == mockStdout.getvalue() )
+
+    #   test sortLines - 05. sort ignore case
+    def test_sortLines_ignoreCase( self ):
+
+        with patch( 'sys.stdout', new=StringIO() ) as mockStdout:
+            inputLines = [ 'DEF', 'abc', 'JKL', 'ghi' ]
+            options = { 'ignoreCase': True }
+
+            sort.sortLines( inputLines, options )
+
+        self.assertTrue( 'abc\nDEF\nghi\nJKL\n' == mockStdout.getvalue() )
+
+    #   test sortLines - 06. sort in the reverse order
+    def test_sortLines_reverse( self ):
+
+        with patch( 'sys.stdout', new=StringIO() ) as mockStdout:
+            inputLines = [ 'def', 'abc', 'jkl', 'ghi' ]
+            options = { 'reverse': True }
+
+            sort.sortLines( inputLines, options )
+
+#        sys.stderr.write( '[debug] result: \'' + mockStdout.getvalue() + '\'\n' )
+        self.assertTrue( 'jkl\nghi\ndef\nabc\n' == mockStdout.getvalue() )
 
     #   sort.main() function tests
 
@@ -193,7 +238,6 @@ class test_sort( unittest.TestCase ):
                 sys.argv = [ 'sort', contentFile.name, '-' ]
                 sort.main()
 
-        #   sys.stderr.write( '[debug] result: \'' + mockStdout.getvalue() + '\'\n' )
         self.assertTrue( 'abcdef\nghijkl\nmnopqr\nstuvwxyz\n' == mockStdout.getvalue() )
         os.remove( contentFile.name )
 
@@ -206,6 +250,26 @@ class test_sort( unittest.TestCase ):
                 sort.main()
 
         self.assertTrue( '  abc\n def\n    ghi\n   jkl\n' == mockStdout.getvalue() )
+
+    #   test main - 29. check for no file names and ignore case option
+    def test_main_stdin_ignoreCase( self ):
+
+        with patch( 'sys.stdout', new=StringIO() ) as mockStdout:
+            with patch( 'sys.stdin', new=StringIO( 'DEF\nabc\nJKL\nghi' ) ) as mockStdin:
+                sys.argv = [ 'sort', '--ignore-case' ]
+                sort.main()
+
+        self.assertTrue( 'abc\nDEF\nghi\nJKL\n' == mockStdout.getvalue() )
+
+    #   test main - 30. check for no file names and reverse the order
+    def test_main_stdin_reverse( self ):
+
+        with patch( 'sys.stdout', new=StringIO() ) as mockStdout:
+            with patch( 'sys.stdin', new=StringIO( 'def\nabc\njkl\nghi' ) ) as mockStdin:
+                sys.argv = [ 'sort', '--reverse' ]
+                sort.main()
+
+        self.assertTrue( 'jkl\nghi\ndef\nabc\n' == mockStdout.getvalue() )
 
 #	entry point
 
