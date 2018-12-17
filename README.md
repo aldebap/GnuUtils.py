@@ -26,6 +26,16 @@ https://github.com/aldebap/GnuUtils.py/tree/master/wc/src
 
 ## sort
 
+Phyton implementation for sort, an utility to sort lines from an input file. The following features were implemented:
+
+-b, --ignore-leading-blanks *for the sake of sorting, ignore any blank character from the begining of a line*
+
+-f, --ignore-case *for the sake of sorting, treat lower case as the same as upper case characters*
+
+-w, --reverse *generate the output in descending order*
+
+https://github.com/aldebap/GnuUtils.py/tree/master/sort/src
+
 ## tar
 
 Information about .tar file format can be read from GNU reference manual: https://www.gnu.org/software/tar/manual/html_node/Standard.html

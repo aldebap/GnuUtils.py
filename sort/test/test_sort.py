@@ -110,8 +110,30 @@ class test_sort( unittest.TestCase ):
 
             sort.sortLines( inputLines, options )
 
-#        sys.stderr.write( '[debug] result: \'' + mockStdout.getvalue() + '\'\n' )
         self.assertTrue( 'jkl\nghi\ndef\nabc\n' == mockStdout.getvalue() )
+
+    #   test sortLines - 07. sort with special characters
+    def test_sortLines_specialCharacters( self ):
+
+        with patch( 'sys.stdout', new=StringIO() ) as mockStdout:
+            inputLines = [ '+ghi', 'ab-c', 'def)', '[jkl' ]
+            options = {}
+
+            sort.sortLines( inputLines, options )
+
+        self.assertTrue( '+ghi\n[jkl\nab-c\ndef)\n' == mockStdout.getvalue() )
+
+    #   test sortLines - 08. sort with special characters and dictionary order 
+    def test_sortLines_dictionaryOrder( self ):
+
+        with patch( 'sys.stdout', new=StringIO() ) as mockStdout:
+            inputLines = [ '+ghi', 'ab-c', 'def)', '[jkl' ]
+            options = { 'dictionaryOrder': True }
+
+            sort.sortLines( inputLines, options )
+
+#        sys.stderr.write( '[debug] result: \'' + mockStdout.getvalue() + '\'\n' )
+        self.assertTrue( 'ab-c\ndef)\n+ghi\n[jkl\n' == mockStdout.getvalue() )
 
     #   sort.main() function tests
 
@@ -270,6 +292,16 @@ class test_sort( unittest.TestCase ):
                 sort.main()
 
         self.assertTrue( 'jkl\nghi\ndef\nabc\n' == mockStdout.getvalue() )
+
+    #   test main - 31. check for no file names and dictionary order option
+    def test_main_stdin_dictionaryOrder( self ):
+
+        with patch( 'sys.stdout', new=StringIO() ) as mockStdout:
+            with patch( 'sys.stdin', new=StringIO( '+ghi\nab-c\ndef)\n[jkl' ) ) as mockStdin:
+                sys.argv = [ 'sort', '--dictionary-order' ]
+                sort.main()
+
+        self.assertTrue( 'ab-c\ndef)\n+ghi\n[jkl\n' == mockStdout.getvalue() )
 
 #	entry point
 

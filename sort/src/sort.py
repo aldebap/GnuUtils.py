@@ -8,11 +8,13 @@
 
 import argparse
 import os.path
+import re
 import sys
 
 #   constants to options
 
 IGNORE_LEADING_BLANKS = 'ignoreLeadingBlanks'
+DICTIONARY_ORDER = 'dictionaryOrder'
 IGNORE_CASE = 'ignoreCase'
 REVERSE = 'reverse'
 
@@ -48,6 +50,7 @@ def sortLines( _inputLines, _options ):
 
     #   sort the original input
     sortedLines = []
+    dictionaryRegex = re.compile( '[^a-z^0-9]*' )
 
     for line in _inputLines:
         inserted = False
@@ -55,6 +58,8 @@ def sortLines( _inputLines, _options ):
         addingLine = line
         if IGNORE_LEADING_BLANKS in _options:
             addingLine = addingLine.lstrip()
+        if DICTIONARY_ORDER in _options:
+            addingLine = dictionaryRegex.sub( '', addingLine )
         if IGNORE_CASE in _options:
             addingLine = addingLine.upper()
 
@@ -63,6 +68,8 @@ def sortLines( _inputLines, _options ):
                 comparingLine = sortedLines[ i ]
                 if IGNORE_LEADING_BLANKS in _options:
                     comparingLine = comparingLine.lstrip()
+                if DICTIONARY_ORDER in _options:
+                    comparingLine = dictionaryRegex.sub( '', comparingLine )
                 if IGNORE_CASE in _options:
                     comparingLine = comparingLine.upper()
 
@@ -75,12 +82,11 @@ def sortLines( _inputLines, _options ):
             sortedLines.append( line )
 
     #   print the ordered input
-#    for line in sortedLines:
-#        sys.stdout.write( line + '\n' )
     lines = len( sortedLines )
+    reverse = REVERSE in _options
 
     for i in range( lines ):
-        if REVERSE not in _options:
+        if not reverse:
             sys.stdout.write( sortedLines[ i ] + '\n' )
         else:
             sys.stdout.write( sortedLines[ lines - i - 1 ] + '\n' )
@@ -93,6 +99,7 @@ def main():
     parser = argparse.ArgumentParser( description='A Phyton implementation of GNU Linux sort utility' )
 
     parser.add_argument( '-b', '--ignore-leading-blanks', dest='ignoreLeadingBlanks', action='store_true', help='ignore leading blanks' )
+    parser.add_argument( '-d', '--dictionary-order', dest='dictionaryOrder', action='store_true', help='consider only blanks and alphanumeric characters' )
     parser.add_argument( '-f', '--ignore-case', dest='ignoreCase', action='store_true', help='fold lower case to upper case characters' )
     parser.add_argument( '-w', '--reverse', dest='reverse', action='store_true', help='reverse the result of comparisons' )
     parser.add_argument( '--version', dest='version', action='store_true', help='output version information and exit' )
@@ -113,6 +120,9 @@ def main():
 
     if True == args.ignoreLeadingBlanks:
         options[ IGNORE_LEADING_BLANKS ] = True
+
+    if True == args.dictionaryOrder:
+        options[ DICTIONARY_ORDER ] = True
 
     if True == args.ignoreCase:
         options[ IGNORE_CASE ] = True
